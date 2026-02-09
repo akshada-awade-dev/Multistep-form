@@ -37,5 +37,6 @@ function savedData3() {
     };
     localStorage.setItem('personal', JSON.stringify(personalData));
     console.log(fname + " " + lname + " " + phone);
-    alert("Data saved successfully!");
+
+
 }   
