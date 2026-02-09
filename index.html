@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>multistep form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+
+    <style>
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutLeft {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+
+        [data-step] {
+            transition: none;
+        }
+
+        [data-step].show {
+            animation: slideInLeft 0.5s ease-in-out forwards;
+        }
+
+        [data-step].show.reverse {
+            animation: slideInRight 0.5s ease-in-out forwards;
+        }
+
+        [data-step].hidden {
+            display: none;
+        }
+
+        [data-step].animating {
+            display: block;
+            animation: slideOutRight 0.5s ease-in-out forwards;
+        }
+
+        [data-step].animating.reverse {
+            animation: slideOutLeft 0.5s ease-in-out forwards;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            margin: 0 auto 30px;
+            position: relative;
+            width: fit-content;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 60%;
+            left: 55px;
+            right: 55px;
+            height: 2px;
+            background-color: #dee2e6;
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+
+        .step-indicator::after {
+            content: '';
+            position: absolute;
+            top: 60%;
+            left: 55px;
+            height: 2px;
+            background-color: #0d6efd;
+            z-index: 1;
+            transition: width 0.5s ease-in-out;
+            transform: translateY(-50%);
+            width: 0%;
+        }
+
+        .step-indicator.step-1::after {
+            width: 0;
+        }
+
+        .step-indicator.step-2::after {
+            width: calc(50% - 55px);
+        }
+
+        .step-indicator.step-3::after {
+            width: calc(100% - 110px);
+        }
+
+        .step-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            border: 2px solid #dee2e6;
+            color: #6c757d;
+            background-color: #fff;
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            z-index: 2;
+            margin: 0 15px;
+            cursor: pointer;
+        }
+
+        .step-box:hover {
+            border-color: #0d6efd;
+            color: #0d6efd;
+        }
+
+        .step-box.active {
+            background-color: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+        }
+
+        .step-box.active:hover {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+
+        /* Real-time validation styles */
+        .form-control:focus:invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+        }
+
+        .form-control:focus:valid {
+            border-color: #198754;
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <form data-multi-step class="shadow rounded my-5 bg-white">
+                    <!-- Step Indicators -->
+                    <div class="step-indicator p-4 pb-2">
+                        <div class="step-box active p-3" data-step-number="1">1</div>
+                        <div class="step-box p-3" data-step-number="2">2</div>
+                        <div class="step-box p-3" data-step-number="3">3</div>
+                    </div>
+
+                    <!-- first stage -->
+                    <div class="p-4" data-step>
+                        <div class="mb-3">
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" name="email" id="email" class="form-control" required
+                                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                title="Please enter a valid email address" data-bs-toggle="tooltip"
+                                data-bs-placement="right">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" name="password" id="password" class="form-control" required
+                                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                data-bs-toggle="tooltip" data-bs-placement="right">
+                        </div>
+                        <button type="button" class="btn btn-primary my-3 w-100" data-next
+                            onclick="savedData1()">Next</button>
+                    </div>
+                    <!-- second stage  -->
+                    <div class="p-4 hidden" data-step>
+                        <div class="mb-3">
+                            <label class="form-label" for="address">Address</label>
+                            <input type="text" name="address" id="address" class="form-control" required
+                                title="Please enter your full address" data-bs-toggle="tooltip"
+                                data-bs-placement="right">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="city">City</label>
+                            <input type="text" name="city" id="city" class="form-control" required pattern="[A-Za-z\s]+"
+                                title="City name should only contain letters and spaces" data-bs-toggle="tooltip"
+                                data-bs-placement="right">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="zipcode">Zipcode</label>
+                            <input type="text" name="zipcode" id="zipcode" class="form-control" required
+                                pattern="\d{5,6}" title="Zipcode must be 5 or 6 digits" data-bs-toggle="tooltip"
+                                data-bs-placement="right">
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-primary my-3 col-5" data-previous>Previous</button>
+                            <button type="button" class="btn btn-primary my-3 col-5" data-next
+                                onclick="savedData2()">Next</button>
+                        </div>
+                    </div>
+                    <!-- third stage -->
+                    <div class="p-4 hidden" data-step>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="fname">First Name</label>
+                            <input type="text" name="fname" id="fname" class="form-control" required pattern="[A-Za-z]+"
+                                title="First name should only contain letters" data-bs-toggle="tooltip"
+                                data-bs-placement="right">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="lname">Lastname</label>
+                            <input type="text" name="lname" id="lname" class="form-control" required pattern="[A-Za-z]+"
+                                title="Last name should only contain letters" data-bs-toggle="tooltip"
+                                data-bs-placement="right">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="phone">Phone </label>
+                            <div class="input-group">
+                                <span class="input-group-text">+91</span>
+                                <input type="tel" name="phone" id="phone" class="form-control" required pattern="\d{10}"
+                                    title="Phone number must be 10 digits" data-bs-toggle="tooltip"
+                                    data-bs-placement="right">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-primary my-3 col-5" data-previous>Previous</button>
+                            <button type="button" class="btn btn-warning my-3 col-5"
+                                onclick="savedData3()">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="./script.js"></script>
+    <script src="./localstorage.js"></script>
+</body>
+
+</html>
